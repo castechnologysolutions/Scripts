@@ -34,7 +34,7 @@ $Product = $_.Categories | Where-Object {$_.Type -eq 'Product'} | Select-Object 
 $_ | Add-Member -MemberType NoteProperty -Value $_.UpdateIdentity.UpdateId -Name UpdateId
 $_ | Add-Member -MemberType NoteProperty -Value $_.UpdateIdentity.RevisionNumber -Name RevisionNumber
 $_ | Add-Member -MemberType NoteProperty -Value $Product -Name Product -PassThru
-Write-Output $_
+#Write-Output $_
 }
 #Remove null records and only return the fields we want
 $history |
