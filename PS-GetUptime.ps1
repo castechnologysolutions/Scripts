@@ -1,29 +1,29 @@
 #(get-computerinfo).osuptime
 
-Function Get-Uptime
-{
-    param
-    (
-        [Parameter()]
-        [switch]
-        $Since
-    )
+# Script to get Windows computer uptime and last reboot time
 
-    BEGIN
-    {
-        $LastBootUpTime = (Get-CimInstance -ClassName Win32_OperatingSystem -Property LastBootUpTime).LastBootUpTime
+# Function to calculate the system uptime
+Function Get-SystemUptime {
+    # Get the current date and time
+    $currentDate = Get-Date
+
+    # Get the last boot-up time using WMI (Win32_OperatingSystem)
+    $os = Get-WmiObject -Class Win32_OperatingSystem
+    $lastBootUpTime = $os.LastBootUpTime
+
+    # Convert the last boot-up time to a readable format
+    $lastBootDateTime = [Management.ManagementDateTimeConverter]::ToDateTime($lastBootUpTime)
+
+    # Calculate uptime
+    $uptime = $currentDate - $lastBootDateTime
+
+    # Return a custom object with the results
+    [PSCustomObject]@{
+        "Current Time"      = $currentDate
+        "Last Reboot Time" = $lastBootDateTime
+        "Uptime"           = $uptime.Days.ToString() + " days, " + $uptime.Hours.ToString() + " hours, " + $uptime.Minutes.ToString() + " minutes"
     }
-
-    PROCESS
-    {
-        if ($Since -eq $true)
-        {
-            return $LastBootUpTime
-        }
-        else
-        {
-            return (Get-Date) - $LastBootUpTime
-        }
-    }
-
 }
+
+# Run the function and output the results
+Get-SystemUptime
