@@ -1,0 +1,24 @@
+param (
+    [string]$DriverName = "#DRIVER NAME#= Intel(R) Ethernet Connection",
+    [string]$DriverVersion = "DRIVER VERSION#= 12.18.9.10"
+)
+
+# Get installed driver details
+$driver = Get-PnpDevice | Where-Object { $_.FriendlyName -like "*$DriverName*" }
+
+if ($driver) {
+    $driverDetails = Get-WmiObject Win32_PnPSignedDriver | Where-Object { $_.DeviceName -like "*$DriverName*" }
+    
+    if ($driverDetails) {
+        Write-Output "Driver Found: $($driverDetails.DeviceName)"
+        Write-Output "Installed Version: $($driverDetails.DriverVersion)"
+        
+        if ($driverDetails.DriverVersion -eq $DriverVersion) {
+            Write-Output "✅ The correct driver version ($DriverVersion) is installed."
+        } else {
+            Write-Output "⚠️ Installed version ($($driverDetails.DriverVersion)) does not match expected version ($DriverVersion)."
+        }
+    }
+} else {
+    Write-Output "❌ The driver '$DriverName' is not installed."
+}
